@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Enviar Ubicación</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 2em;
+        text-align: center;
+      }
+      button {
+        padding: 1em 2em;
+        font-size: 16px;
+        background-color: #1976d2;
+        color: white;
+        border: none;
+        border-radius: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Enviar Ubicación</h2>
+    <p>Haz clic en el botón para compartir tu ubicación actual.</p>
+    <input type="text" id="nombre" placeholder="Tu nombre" style="padding: 0.5em; width: 80%; margin-bottom: 1em;">
+    <br>
+    <button onclick="enviarUbicacion()">Enviar Ubicación</button>
+
+    <p id="estado" style="margin-top: 1em;"></p>
+
+    <script>
+      function enviarUbicacion() {
+        const nombre = document.getElementById("nombre").value;
+        const estado = document.getElementById("estado");
+
+        if (!nombre.trim()) {
+          estado.textContent = "Por favor, ingresa tu nombre.";
+          return;
+        }
+
+        if (navigator.geolocation) {
+          estado.textContent = "Obteniendo ubicación...";
+          navigator.geolocation.getCurrentPosition(function(pos) {
+            const lat = pos.coords.latitude;
+            const lng = pos.coords.longitude;
+
+            const url = "https://script.google.com/a/macros/bancajerosbanet.com/s/AKfycbySQXZnl1rlYOhj0O3vyE8iiMMcG7aXIb4AbUK9pw-mpSF3nu2tL2Cc-5A8kDJSvKMT/exec" +
+                        `?lat=${lat}&lng=${lng}&nombre=${encodeURIComponent(nombre)}`;
+
+            fetch(url)
+              .then(res => res.text())
+              .then(text => estado.textContent = text)
+              .catch(err => estado.textContent = "Error al enviar ubicación.");
+          }, function(error) {
+            estado.textContent = "Error al obtener ubicación: " + error.message;
+          });
+        } else {
+          estado.textContent = "Tu navegador no soporta geolocalización.";
+        }
+      }
+    </script>
+  </body>
+</html>
